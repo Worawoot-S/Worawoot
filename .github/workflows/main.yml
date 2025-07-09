@@ -1,0 +1,30 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+
+    - name: Install MinGW
+      run: |
+        choco install mingw -y
+        echo "PATH=C:\\ProgramData\\chocolatey\\bin;C:\\MinGW\\bin" >> $GITHUB_ENV
+
+    - name: Compile C++ Code
+      run: |
+        g++ main.cpp -o door_calculator.exe
+        mkdir artifacts
+        move door_calculator.exe artifacts/
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: door-calculator-exe
+        path: artifacts/door_calculator.exe
